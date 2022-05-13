@@ -1,60 +1,162 @@
 import React from 'react'
-import App from '../App';
-import ColorModeContext from './contexts/ColorModeContext';
-import createTheme from '@mui/material/styles/createTheme';
-import CssBaseline from '@mui/material/CssBaseline/CssBaseline';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import ThemeProvider from '@mui/material/styles/ThemeProvider';
-import { PaletteMode } from '@mui/material';
-import { amber, deepOrange, grey } from '@mui/material/colors';
+import App from '../App'
+import ColorModeContext from './contexts/ColorModeContext'
+import createTheme from '@mui/material/styles/createTheme'
+import CssBaseline from '@mui/material/CssBaseline/CssBaseline'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import ThemeProvider from '@mui/material/styles/ThemeProvider'
+import { PaletteMode, ThemeOptions } from '@mui/material'
+import createPalette from '@mui/material/styles/createPalette'
 
 type Props = {}
 
-const getDesignTokens = (mode: PaletteMode) => ({
-  palette: {
-    mode,
-    ...(mode === 'light'
-      ? {
-          // palette values for light mode
-          primary: amber,
-          divider: amber[200],
-          background: {
-            default: grey[100],
-            paper: grey[100]
-          },
-          text: {
-            primary: grey[900],
-            secondary: grey[800],
-          },
-        }
-      : {
-          // palette values for dark mode
-          primary: deepOrange,
-          divider: deepOrange[700],
-          background: {
-            default: '#333',
-            paper: grey[900],
-          },
-          text: {
-            primary: '#fff',
-            secondary: grey[500],
-          },
-        }),
+const nord = [
+  // Polar Night
+  '#2e3440', // darkest grey
+  '#3b4252', // darker grey
+  '#434c5e', // dark grey
+  '#4c566a', // grey
+  // Snow Storm
+  '#d8dee9', // light grey
+  '#e5e9f0', // lighter grey
+  '#eceff4', // lightest grey
+  // Frost
+  '#8fbcbb', // frozen polar water
+  '#88c0d0', // pure & clear ice
+  '#81a1c1', // arctic waters
+  '#5e81ac', // deep arctic ocean
+  // Aurora
+  '#bf616a', // red
+  '#d08770', // orange
+  '#ebcb8b', // yellow
+  '#a3be8c', // green
+  '#b48ead', // violet
+]
+
+const nordGrey = {
+  200: nord[6],
+  300: nord[5],
+  400: nord[4],
+  500: nord[3],
+  600: nord[2],
+  700: nord[1],
+  800: nord[0],
+  A100: nord[6],
+  A200: nord[4],
+  A400: nord[2],
+  A700: nord[0],
+}
+
+const lightPalette = createPalette({
+  primary: {
+    main: nord[10],
   },
-});
+  secondary: {
+    main: nord[9],
+  },
+  error: {
+    main: nord[11],
+  },
+  warning: {
+    main: nord[13],
+  },
+  info: {
+    main: nord[7],
+  },
+  success: {
+    main: nord[14],
+  },
+  mode: 'light',
+  common: {
+    black: nord[0],
+    white: nord[6]
+  },
+  grey: nordGrey,
+  text: {
+    primary: nord[0],
+    secondary: nord[1],
+    disabled: nord[3],
+  },
+  divider: nord[0],
+  action: {
+    active: nord[4],
+    hover: nord[5],
+    selected: nord[2],
+    disabled: nord[3],
+    disabledBackground: nord[6],
+    focus: nord[10],
+  },
+  background: {
+    default: nord[6],
+    paper: nord[5]
+  },
+})
+
+const darkPalette = createPalette({
+  primary: {
+    main: nord[8],
+  },
+  secondary: {
+    main: nord[9],
+  },
+  error: {
+    main: nord[11],
+  },
+  warning: {
+    main: nord[13],
+  },
+  info: {
+    main: nord[7],
+  },
+  success: {
+    main: nord[14],
+  },
+  mode: 'dark',
+  common: {
+    black: nord[0],
+    white: nord[6]
+  },
+  grey: nordGrey,
+  text: {
+    primary: nord[6],
+    secondary: nord[5],
+    disabled: nord[3],
+  },
+  divider: nord[6],
+  action: {
+    active: nord[2],
+    hover: nord[1],
+    selected: nord[4],
+    disabled: nord[3],
+    disabledBackground: nord[0],
+    focus: nord[9],
+  },
+  background: {
+    default: nord[0],
+    paper: nord[1]
+  },
+})
+
+const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
+  shadows: ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
+  palette: mode === 'light' ? lightPalette : darkPalette,
+  typography: {
+    fontFamily: 'Inter, sans-serif'
+  }
+})
 
 const ToggleColorMode = (props: Props) => {
-  const [mode, setMode] = React.useState<PaletteMode>(useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light');
+  const [mode, setMode] = React.useState<PaletteMode>(useMediaQuery('(prefers-color-scheme: dark)') ? 'dark' : 'light')
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
         setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-      },
+      }
     }),
     [],
-  );
+  )
 
-  const theme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+  const theme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode])
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -63,7 +165,7 @@ const ToggleColorMode = (props: Props) => {
         <App />
       </ThemeProvider>
     </ColorModeContext.Provider>
-  );
+  )
 }
 
 export default ToggleColorMode

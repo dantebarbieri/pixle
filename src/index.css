@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+rect, circle, path {
+  stroke: inherit !important;
+  fill: inherit !important;
+}

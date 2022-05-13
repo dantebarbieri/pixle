@@ -26,7 +26,6 @@ const TopBar = (props: Props) => {
                 position: 'static',
                 display: 'flex',
                 flexDirection: 'row',
-                width: 'unset',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 bgcolor: theme.palette.background.default,
@@ -34,9 +33,7 @@ const TopBar = (props: Props) => {
                 backgroundImage: 'none',
                 boxShadow: 'none',
                 p: `${theme.spacing(1)} ${theme.spacing(3)}`,
-                m: `0 ${theme.spacing(2)}`,
-                borderBottom: `solid ${theme.spacing(0.5)} currentColor`,
-                boxSizing: 'border-box'
+                borderBottom: `solid ${theme.spacing(0.5)} ${theme.palette.divider}`
             }}
         >
             <IconButton sx={{visibility: 'hidden'}} color="inherit">
