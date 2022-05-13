@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Box from "@mui/system/Box/Box";
+import GuessIndicator from "./components/low-level/GuessIndicator";
+import GuessInput from "./components/low-level/GuessInput";
+import PixelatedImage from "./components/low-level/PixelatedImage";
+import TopBar from "./components/mid-level/TopBar";
 
-function App() {
+type Props = {}
+
+const App = (props: Props) => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <TopBar />
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+      }}>
+        <PixelatedImage />
+        <Box sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+      }}>
+        <GuessIndicator />
+        <GuessIndicator />
+        <GuessIndicator />
+        <GuessIndicator />
+        <GuessIndicator />
+        <GuessIndicator />
+      </Box>
+      <GuessInput />
+      </Box>
+    </>
   );
 }
 
-export default App;
+export default App
