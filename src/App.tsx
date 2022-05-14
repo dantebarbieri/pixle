@@ -42,7 +42,9 @@ const App = (props: Props) => {
   const makeGuess = React.useCallback(() => {
     if (guessedArtwork) {
       const guess: GuessStatus = guessedArtwork === selectedArtwork ? 'correct' : 'incorrect'
-
+      if (guess === 'correct') {
+        setPixelation(0)
+      }
       setGuesses(guesses.concat(guess))
     }
   }, [guessedArtwork, selectedArtwork, guesses])
@@ -77,19 +79,19 @@ const App = (props: Props) => {
         {selectedArtwork && (<PixelatedImage art={selectedArtwork} pixelation={pixelation} />)}
         <Box>
           <GuessBoxes guesses={guesses} numBoxes={6} />
-          <GuessInput options={artworks} limit={6} setGuessedArtwork={setGuessedArtwork} />
+          <GuessInput disabled={pixelation === 0} options={artworks} setGuessedArtwork={setGuessedArtwork} />
           <Box sx={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'flex-start',
             justifyContent: 'space-between'
           }}>
-            <Button onClick={revealImage}>
+            <Button onClick={revealImage} disabled={pixelation === 0}>
               <Typography>
                 Skip
               </Typography>
             </Button>
-            <Button onClick={makeGuess} sx={{color: theme.palette.success.main}}>
+            <Button onClick={makeGuess} sx={{color: theme.palette.success.main}} disabled={pixelation === 0}>
               <Typography>
                 Guess
               </Typography>

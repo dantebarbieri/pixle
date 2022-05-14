@@ -6,6 +6,7 @@ import Art from '../../utils/interfaces/art';
 type Props = {
   options: Art[]
   limit?: number
+  disabled?: boolean
   setGuessedArtwork: React.Dispatch<React.SetStateAction<Art | null>>
 }
 
@@ -23,6 +24,7 @@ const GuessInput = (props: Props) => {
       filterOptions={filterOptions}
       onChange={(_, option) => props.setGuessedArtwork(option)}
       fullWidth
+      disabled={props.disabled}
       renderInput={(params) => <TextField {...params} label="Artwork name" />}
     />
   )
