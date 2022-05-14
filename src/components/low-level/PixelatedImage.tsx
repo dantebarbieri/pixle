@@ -2,6 +2,7 @@ import React from 'react'
 import Box from '@mui/material/Box/Box'
 import useTheme from '@mui/material/styles/useTheme';
 import Art from '../../utils/interfaces/art';
+import { Typography } from '@mui/material';
 
 type Props = {
     art: Art,
@@ -11,41 +12,47 @@ type Props = {
 const PixelatedImage = (props: Props) => {
     const theme = useTheme();
 
-    const canvasRef = React.useRef<HTMLCanvasElement>(null)
+    const [loading, setLoading] = React.useState(true)
 
-    const [img, setImg] = React.useState<HTMLImageElement>()
+    const canvasRef = React.useRef<HTMLCanvasElement>(null)
+    const imgRef = React.useRef<HTMLImageElement>(null)
 
     const resizeCanvas = React.useCallback(() => {
         const canvas = canvasRef.current
-        if (canvas && img) {
+        const img = imgRef.current
+        if (canvas && img?.naturalWidth) {
+            console.log(img.naturalWidth * canvas.clientHeight / img.naturalHeight)
             canvas.width = img.naturalWidth * canvas.clientHeight / img.naturalHeight
         }
-    }, [img])
+    }, [])
 
     const redrawCanvas = React.useCallback(() => {
         const canvas = canvasRef.current
         const ctx = canvas?.getContext('2d')
-        if (canvas && ctx && img) {
+        const img = imgRef.current
+        if (canvas && ctx && img && canvas.width) {
             const scaling = 1.618 ** props.pixelation
-            const w = canvas.width / scaling;
-            const h = canvas.height / scaling;
+            const w = Math.max(1, canvas.width / scaling);
+            const h = Math.max(1, canvas.height / scaling);
 
             ctx.drawImage(img, 0, 0, w, h);
 
-            ctx.imageSmoothingEnabled = props.pixelation === 0;
+            ctx.imageSmoothingEnabled = false;
 
-            // enlarge the minimized image to full size    
+            // enlarge the minimized image to full size
             ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height)
         }
-    }, [props.pixelation, img])
+    }, [props.pixelation])
 
-    const repaintCanvas = React.useCallback(() => {resizeCanvas(); redrawCanvas()}, [resizeCanvas, redrawCanvas])
+    const repaintCanvas = React.useCallback(() => { resizeCanvas(); redrawCanvas() }, [resizeCanvas, redrawCanvas])
+
+    const setupCallback = React.useCallback(() => { setLoading(false) }, [])
+
+    React.useEffect(repaintCanvas, [loading, repaintCanvas])
 
     React.useEffect(() => {
-        const image = new Image()
-        image.addEventListener("load", () => setImg(image))
-        image.src = props.art.url
-    }, [props.art])
+        imgRef.current?.addEventListener("load", setupCallback)
+    }, [imgRef, setupCallback])
 
     React.useEffect(() => {
         repaintCanvas()
@@ -66,7 +73,11 @@ const PixelatedImage = (props: Props) => {
             m: 4,
             flexGrow: 1
         }}>
-            <canvas ref={canvasRef} style={{ flexGrow: 1 }} />
+            {loading && <Typography variant='h2'>
+                Loading...
+            </Typography>}
+            <img ref={imgRef} src={props.art.url} alt={props.art.title} height={canvasRef.current?.clientHeight} style={{ display: loading ? 'none' : props.pixelation !== 0 ? 'none' : 'initial' }} />
+            <canvas ref={canvasRef} style={{ flexGrow: 1, display: loading ? 'none' : props.pixelation === 0 ? 'none' : 'initial' }} />
         </Box>
     )
 }
