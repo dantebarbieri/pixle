@@ -15,7 +15,14 @@ const PixelatedImage = (props: Props) => {
 
     const [img, setImg] = React.useState<HTMLImageElement>()
 
-    React.useEffect(() => {
+    const resizeCanvas = React.useCallback(() => {
+        const canvas = canvasRef.current
+        if (canvas && img) {
+            canvas.width = img.naturalWidth * canvas.clientHeight / img.naturalHeight
+        }
+    }, [img])
+
+    const redrawCanvas = React.useCallback(() => {
         const canvas = canvasRef.current
         const ctx = canvas?.getContext('2d')
         if (canvas && ctx && img) {
@@ -27,24 +34,26 @@ const PixelatedImage = (props: Props) => {
 
             ctx.imageSmoothingEnabled = props.pixelation === 0;
 
-            console.log(ctx)
-
             // enlarge the minimized image to full size    
             ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height)
         }
     }, [props.pixelation, img])
 
+    const repaintCanvas = React.useCallback(() => {resizeCanvas(); redrawCanvas()}, [resizeCanvas, redrawCanvas])
+
     React.useEffect(() => {
-        if (canvasRef.current) {
-            const image = new Image()
-            image.addEventListener("load", () => {
-                const canvas = canvasRef.current as HTMLCanvasElement
-                canvas.width = image.naturalWidth * canvas.clientHeight / image.naturalHeight
-                setImg(image)
-            })
-            image.src = props.art.url
-        }
+        const image = new Image()
+        image.addEventListener("load", () => setImg(image))
+        image.src = props.art.url
     }, [props.art])
+
+    React.useEffect(() => {
+        repaintCanvas()
+
+        window.addEventListener("resize", repaintCanvas)
+
+        return () => window.removeEventListener("resize", repaintCanvas)
+    }, [repaintCanvas])
 
     return (
         <Box sx={{
