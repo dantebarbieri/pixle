@@ -1,14 +1,19 @@
-import Box from '@mui/material/Box/Box'
-import useTheme from '@mui/material/styles/useTheme'
 import React from 'react'
+import Box from '@mui/material/Box/Box'
+import GuessStatus from '../../utils/interfaces/guess'
 import GuessIndicator from '../low-level/GuessIndicator'
 
 type Props = {
-    numBoxes: number
+    guesses: GuessStatus[],
+    numBoxes?: number
 }
 
 const GuessBoxes = (props: Props) => {
-    const theme = useTheme()
+    const boxes: (GuessStatus | undefined)[] = props.guesses.slice()
+
+    if (props.numBoxes) while (boxes.length < props.numBoxes) {
+        boxes.push(undefined)
+    }
 
     return (
         <Box sx={{
@@ -17,12 +22,7 @@ const GuessBoxes = (props: Props) => {
             alignItems: 'center',
             justifyContent: 'space-around',
         }}>
-            <GuessIndicator status='incorrect' />
-            <GuessIndicator status='revealed' />
-            <GuessIndicator status='incorrect' />
-            <GuessIndicator status='correct' />
-            <GuessIndicator />
-            <GuessIndicator />
+            {boxes.map((box, idx) => (<GuessIndicator key={idx} status={box} />))}
         </Box>
     )
 }

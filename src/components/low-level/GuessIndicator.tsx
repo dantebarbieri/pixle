@@ -1,9 +1,10 @@
+import React from 'react'
 import Box from '@mui/material/Box/Box'
 import useTheme from '@mui/material/styles/useTheme';
-import React from 'react'
+import GuessStatus from '../../utils/interfaces/guess';
 
 type Props = {
-  status?: 'correct' | 'incorrect' | 'revealed'
+  status?: GuessStatus
 }
 
 const GuessIndicator = (props: Props) => {

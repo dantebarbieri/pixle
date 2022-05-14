@@ -1,9 +1,10 @@
 import React from 'react'
 import Box from '@mui/material/Box/Box'
 import useTheme from '@mui/material/styles/useTheme';
+import Art from '../../utils/interfaces/art';
 
 type Props = {
-    url: string,
+    art: Art,
     pixelation: number
 }
 
@@ -12,37 +13,38 @@ const PixelatedImage = (props: Props) => {
 
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
 
-    const img = new Image();
+    const [img, setImg] = React.useState<HTMLImageElement>()
 
-    const resizeCanvasDraw = React.useCallback(() => {
-        const canvas = canvasRef.current as HTMLCanvasElement
-        canvas.width = img.naturalWidth * canvas.height / img.naturalHeight
-
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-            const scaling = 5**props.pixelation
-            const w = img.naturalWidth / scaling;
-            const h = img.naturalHeight / scaling;
+    React.useEffect(() => {
+        const canvas = canvasRef.current
+        const ctx = canvas?.getContext('2d')
+        if (canvas && ctx && img) {
+            const scaling = 1.618 ** props.pixelation
+            const w = canvas.width / scaling;
+            const h = canvas.height / scaling;
 
             ctx.drawImage(img, 0, 0, w, h);
 
-            ctx.imageSmoothingEnabled = false;
+            ctx.imageSmoothingEnabled = props.pixelation === 0;
+
+            console.log(ctx)
 
             // enlarge the minimized image to full size    
-            ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
-
-            setLoaded(true)
+            ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height)
         }
-    }, [canvasRef, img])
-    
-    const [loaded, setLoaded] = React.useState(false)
+    }, [props.pixelation, img])
 
     React.useEffect(() => {
         if (canvasRef.current) {
-            img.addEventListener("load", resizeCanvasDraw);
-            img.src = props.url;
+            const image = new Image()
+            image.addEventListener("load", () => {
+                const canvas = canvasRef.current as HTMLCanvasElement
+                canvas.width = image.naturalWidth * canvas.clientHeight / image.naturalHeight
+                setImg(image)
+            })
+            image.src = props.art.url
         }
-    }, [loaded])
+    }, [props.art])
 
     return (
         <Box sx={{
