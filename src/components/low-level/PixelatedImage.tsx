@@ -22,7 +22,6 @@ const PixelatedImage = (props: Props) => {
         const img = imgRef.current
         if (canvas && img?.naturalWidth) {
             canvas.width = img.naturalWidth * canvas.clientHeight / img.naturalHeight
-            canvas.height = canvas.clientHeight
         }
     }, [])
 
@@ -31,9 +30,9 @@ const PixelatedImage = (props: Props) => {
         const ctx = canvas?.getContext('2d')
         const img = imgRef.current
         if (canvas && ctx && img && canvas.width) {
-            const scaling = Math.max(1, 10 * (Math.max(1, props.pixelation)))
-            const w = Math.max(1, canvas.width / scaling);
-            const h = Math.max(1, canvas.height / scaling);
+            const scaling = Math.max(1, Math.max(1, 10 * props.pixelation))
+            const w = Math.max(1, Math.ceil(canvas.width / scaling));
+            const h = Math.max(1, Math.ceil(canvas.clientHeight / scaling));
 
             ctx.drawImage(img, 0, 0, w, h);
 
