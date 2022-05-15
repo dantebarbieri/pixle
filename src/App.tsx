@@ -9,7 +9,7 @@ import TopBar from "./components/mid-level/TopBar";
 import GuessStatus from './utils/interfaces/guess';
 import Art from "./utils/interfaces/art";
 import Typography from "@mui/material/Typography/Typography";
-import ArtworkDialog from "./components/top-level/ArtworkDialog";
+import ShareDialog from "./components/top-level/ShareDialog";
 import ArtworksList from './tmp/artworks.json'
 
 type Props = {
@@ -74,7 +74,7 @@ const App = (props: Props) => {
       alignItems: 'center',
       p: `0 ${theme.spacing(2)}`,
     }}>
-      <TopBar />
+      <TopBar setArtworkDialogOpen={setOpenArtworkDialog} />
       <Box sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -107,7 +107,7 @@ const App = (props: Props) => {
           </Box>
         </Box>
       </Box>
-      <ArtworkDialog open={openArtworkDialog} art={selectedArtwork} onClose={() => setOpenArtworkDialog(false)} guesses={guesses} guessLimit={guessLimit} day={0} />
+      <ShareDialog open={openArtworkDialog} art={selectedArtwork} onClose={() => setOpenArtworkDialog(false)} guesses={guesses} guessLimit={guessLimit} day={0} />
     </Box>
   );
 }

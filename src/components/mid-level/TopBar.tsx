@@ -8,15 +8,19 @@ import useTheme from '@mui/material/styles/useTheme'
 import DarkMode from '@mui/icons-material/DarkMode'
 import LightMode from '@mui/icons-material/LightMode'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+// import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import { AppBar } from '@mui/material'
 
-type Props = {}
+type Props = {
+    setArtworkDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 const TopBar = (props: Props) => {
+    const { setArtworkDialogOpen } = props
+
     const theme = useTheme();
     const colorMode = React.useContext(ColorModeContext);
 
@@ -59,7 +63,7 @@ const TopBar = (props: Props) => {
                 </ButtonGroup>
                 <Logo />
                 <ButtonGroup variant="text" aria-label="text button group">
-                    <IconButton color="inherit">
+                    <IconButton color="inherit" onClick={() => setArtworkDialogOpen(true)}>
                         <LeaderboardIcon />
                     </IconButton>
                     <IconButton color="inherit">
