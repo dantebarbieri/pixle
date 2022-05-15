@@ -19,7 +19,7 @@ const Logo = (props: Props) => {
             borderRadius: 1,
             m: `0 ${theme.spacing(3)}`
         }}>
-            <PixleLogo
+            <PixleLogo className='logo'
                 height={theme.spacing(4)}
                 width='auto'
                 style={{

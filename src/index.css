@@ -12,7 +12,7 @@ code {
     monospace;
 }
 
-rect, circle, path {
+svg.logo rect, svg.logo circle, svg.logo path {
   stroke: inherit !important;
   fill: inherit !important;
 }
