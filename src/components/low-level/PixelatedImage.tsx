@@ -3,6 +3,8 @@ import Box from '@mui/material/Box/Box'
 import useTheme from '@mui/material/styles/useTheme';
 import Art from '../../utils/interfaces/art';
 import CircularProgress from '@mui/material/CircularProgress/CircularProgress';
+import VerticalArtFrame from '../../assets/artFrame.jpg'
+import HorizontalArtFrame from '../../assets/artFrame-horizontal.jpg'
 // import { OverridableComponent } from '@mui/material/OverridableComponent';
 // import { BoxTypeMap } from '@mui/system/Box/Box';
 
@@ -29,8 +31,8 @@ const PixelatedImage = (props: Props) => {
     }, [])
 
     const resizeImage = React.useCallback(() => {
-        imgRef.current?.setAttribute('max-height', `${boxRef.current?.clientHeight}`)
-    }, [boxRef])
+        imgRef.current?.setAttribute('max-height', `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(4)})`)
+    }, [boxRef, theme])
 
     const redrawCanvas = React.useCallback(() => {
         const canvas = canvasRef.current
@@ -84,14 +86,16 @@ const PixelatedImage = (props: Props) => {
                 flexDirection: 'column',
                 bgcolor: theme.palette.background.default,
                 color: theme.palette.text.primary,
-                border: `solid ${theme.spacing(1)} currentColor`,
-                borderRadius: theme.spacing(0.5),
+                borderStyle: 'solid',
+                borderImage: `url(${boxRef.current?.clientWidth as number < (boxRef.current?.clientHeight as number) ? VerticalArtFrame : HorizontalArtFrame}) 188 / ${theme.spacing(4)} / 0`,
+                p: theme.spacing(4),
                 m: 4,
+                boxSizing: 'content-box',
                 flexGrow: props.pixelation
             }}>
                 <img ref={imgRef} src={props.art.url} alt={props.art.title} style={{
                     maxWidth: '100%',
-                    maxHeight: boxRef.current?.clientHeight,
+                    maxHeight: `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(4)})`,
                     display: loading ? 'none' : props.pixelation !== 0 ? 'none' : 'initial' }} />
                 <canvas ref={canvasRef} style={{ flexGrow: 1, display: loading ? 'none' : props.pixelation === 0 ? 'none' : 'initial' }} />
             </Box>
