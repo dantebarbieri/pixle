@@ -31,7 +31,7 @@ const PixelatedImage = (props: Props) => {
     }, [])
 
     const resizeImage = React.useCallback(() => {
-        imgRef.current?.setAttribute('max-height', `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(4)})`)
+        imgRef.current?.setAttribute('max-height', `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(3.5)})`)
     }, [boxRef, theme])
 
     const redrawCanvas = React.useCallback(() => {
@@ -88,14 +88,14 @@ const PixelatedImage = (props: Props) => {
                 color: theme.palette.text.primary,
                 borderStyle: 'solid',
                 borderImage: `url(${boxRef.current?.clientWidth as number < (boxRef.current?.clientHeight as number) ? VerticalArtFrame : HorizontalArtFrame}) 188 / ${theme.spacing(4)} / 0`,
-                p: theme.spacing(4),
+                p: theme.spacing(3.5),
                 m: 4,
                 boxSizing: 'content-box',
                 flexGrow: props.pixelation
             }}>
                 <img ref={imgRef} src={props.art.url} alt={props.art.title} style={{
                     maxWidth: '100%',
-                    maxHeight: `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(4)})`,
+                    maxHeight: `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(3.5)})`,
                     display: loading ? 'none' : props.pixelation !== 0 ? 'none' : 'initial' }} />
                 <canvas ref={canvasRef} style={{ flexGrow: 1, display: loading ? 'none' : props.pixelation === 0 ? 'none' : 'initial' }} />
             </Box>
