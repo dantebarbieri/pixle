@@ -3,8 +3,8 @@ import Box from '@mui/material/Box/Box'
 import useTheme from '@mui/material/styles/useTheme';
 import Art from '../../utils/interfaces/art';
 import CircularProgress from '@mui/material/CircularProgress/CircularProgress';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { BoxTypeMap } from '@mui/system/Box/Box';
+// import { OverridableComponent } from '@mui/material/OverridableComponent';
+// import { BoxTypeMap } from '@mui/system/Box/Box';
 
 type Props = {
     art: Art,
@@ -18,7 +18,7 @@ const PixelatedImage = (props: Props) => {
 
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
     const imgRef = React.useRef<HTMLImageElement>(null)
-    const boxRef = React.useRef<OverridableComponent<BoxTypeMap<{}, "div">>>(null);
+    const boxRef = React.useRef<HTMLDivElement>(null);
 
     const resizeCanvas = React.useCallback(() => {
         const canvas = canvasRef.current
@@ -29,16 +29,16 @@ const PixelatedImage = (props: Props) => {
     }, [])
 
     const resizeImage = React.useCallback(() => {
-        imgRef.current?.setAttribute('max-height', `${(boxRef.current as unknown as HTMLDivElement | undefined)?.clientHeight}`)
-        console.log('max-height', `${(boxRef.current as unknown as HTMLDivElement | undefined)?.clientHeight}`)
+        imgRef.current?.setAttribute('max-height', `${boxRef.current?.clientHeight}`)
     }, [boxRef])
 
     const redrawCanvas = React.useCallback(() => {
         const canvas = canvasRef.current
         const ctx = canvas?.getContext('2d')
         const img = imgRef.current
-        if (canvas && ctx && img && canvas.width) {
-            const scaling = Math.max(1, Math.max(1, 10 * props.pixelation))
+        const box = boxRef.current
+        if (canvas && ctx && img && box && canvas.width) {
+            const scaling = Math.max(1, (img.naturalWidth < img.naturalHeight ? box.clientWidth : box.clientHeight) / 50 * props.pixelation)
             const w = Math.max(1, Math.ceil(canvas.width / scaling));
             const h = Math.max(1, Math.ceil(canvas.clientHeight / scaling));
 
@@ -91,7 +91,7 @@ const PixelatedImage = (props: Props) => {
             }}>
                 <img ref={imgRef} src={props.art.url} alt={props.art.title} style={{
                     maxWidth: '100%',
-                    maxHeight: (boxRef.current as unknown as HTMLDivElement | undefined)?.clientHeight,
+                    maxHeight: boxRef.current?.clientHeight,
                     display: loading ? 'none' : props.pixelation !== 0 ? 'none' : 'initial' }} />
                 <canvas ref={canvasRef} style={{ flexGrow: 1, display: loading ? 'none' : props.pixelation === 0 ? 'none' : 'initial' }} />
             </Box>
