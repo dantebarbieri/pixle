@@ -162,7 +162,7 @@ const ToggleColorMode = (props: Props) => {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        <App guessLimit={6} />
       </ThemeProvider>
     </ColorModeContext.Provider>
   )

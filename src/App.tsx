@@ -9,12 +9,16 @@ import TopBar from "./components/mid-level/TopBar";
 import GuessStatus from './utils/interfaces/guess';
 import Art from "./utils/interfaces/art";
 import Typography from "@mui/material/Typography/Typography";
-import ArtworkDialog from "./components/low-level/ArtworkDialog";
+import ArtworkDialog from "./components/top-level/ArtworkDialog";
 import ArtworksList from './tmp/artworks.json'
 
-type Props = {}
+type Props = {
+  guessLimit: number
+}
 
 const App = (props: Props) => {
+  const { guessLimit } = props
+
   const theme = useTheme()
 
   const [artworks, setArtworks] = React.useState<Art[]>([])
@@ -34,7 +38,7 @@ const App = (props: Props) => {
     setSelectedArtwork(artworks[Math.floor(Math.random() * artworks.length)])
   }, [artworks])
 
-  const [pixelation, setPixelation] = React.useState(6)
+  const [pixelation, setPixelation] = React.useState(guessLimit)
   const [guesses, setGuesses] = React.useState<GuessStatus[]>([])
 
   const [guessedArtwork, setGuessedArtwork] = React.useState<Art | null>(null)
@@ -42,23 +46,23 @@ const App = (props: Props) => {
   const makeGuess = React.useCallback(() => {
     if (guessedArtwork) {
       const guess: GuessStatus = guessedArtwork === selectedArtwork ? 'correct' : 'incorrect'
-      if (guess === 'correct' || guesses.length + 1 >= 6) {
+      if (guess === 'correct' || guesses.length + 1 >= guessLimit) {
         setPixelation(0)
         setGameOver(true)
       }
       setGuesses(guesses.concat(guess))
     }
-  }, [guessedArtwork, selectedArtwork, guesses])
+  }, [guessedArtwork, selectedArtwork, guesses, guessLimit])
 
   const revealImage = React.useCallback(() => {
     if (pixelation > 0) {
       setPixelation(pixelation - 1)
-      if (guesses.length + 1 >= 6) {
+      if (guesses.length + 1 >= guessLimit) {
         setGameOver(true)
       }
       setGuesses(guesses.concat('revealed'))
     }
-  }, [pixelation, guesses])
+  }, [pixelation, guesses, guessLimit])
 
   return (
     <Box sx={{
@@ -82,7 +86,7 @@ const App = (props: Props) => {
       }}>
         {selectedArtwork && (<PixelatedImage art={selectedArtwork} pixelation={pixelation} />)}
         <Box>
-          <GuessBoxes guesses={guesses} minNumBoxes={6} />
+          <GuessBoxes guesses={guesses} minNumBoxes={guessLimit} />
           <GuessInput disabled={gameOver} options={artworks} setGuessedArtwork={setGuessedArtwork} />
           <Box sx={{
             display: 'flex',
@@ -103,7 +107,7 @@ const App = (props: Props) => {
           </Box>
         </Box>
       </Box>
-      <ArtworkDialog open={openArtworkDialog} art={selectedArtwork} onClose={() => setOpenArtworkDialog(false)} />
+      <ArtworkDialog open={openArtworkDialog} art={selectedArtwork} onClose={() => setOpenArtworkDialog(false)} guesses={guesses} guessLimit={guessLimit} day={0} />
     </Box>
   );
 }
