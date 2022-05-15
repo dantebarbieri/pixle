@@ -1,6 +1,8 @@
 interface Art {
-    title: string
-    url: string
+    title: string,
+    artist: string,
+    url: string,
+    attribution: string
 }
 
 export default Art

@@ -5,13 +5,13 @@ import GuessIndicator from '../low-level/GuessIndicator'
 
 type Props = {
     guesses: GuessStatus[],
-    numBoxes?: number
+    minNumBoxes?: number
 }
 
 const GuessBoxes = (props: Props) => {
     const boxes: (GuessStatus | undefined)[] = props.guesses.slice()
 
-    if (props.numBoxes) while (boxes.length < props.numBoxes) {
+    if (props.minNumBoxes) while (boxes.length < props.minNumBoxes) {
         boxes.push(undefined)
     }
 
@@ -21,6 +21,7 @@ const GuessBoxes = (props: Props) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-around',
+            m: 1
         }}>
             {boxes.map((box, idx) => (<GuessIndicator key={idx} status={box} />))}
         </Box>
