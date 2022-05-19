@@ -5,8 +5,6 @@ import Art from '../../utils/interfaces/art';
 import CircularProgress from '@mui/material/CircularProgress/CircularProgress';
 import VerticalArtFrame from '../../assets/artFrame.jpg'
 import HorizontalArtFrame from '../../assets/artFrame-horizontal.jpg'
-// import { OverridableComponent } from '@mui/material/OverridableComponent';
-// import { BoxTypeMap } from '@mui/system/Box/Box';
 
 type Props = {
     art: Art,
