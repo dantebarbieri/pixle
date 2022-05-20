@@ -4,25 +4,24 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Art from '../../utils/interfaces/art';
 
 type Props = {
-  options: Art[]
+  options: string[]
   limit?: number
   disabled?: boolean
-  setGuessedArtwork: React.Dispatch<React.SetStateAction<Art | null>>
+  setGuessedArtwork: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 const GuessInput = (props: Props) => {
   const filterOptions = createFilterOptions({
-    limit: props.limit,
-    stringify: (option: Art) => option.title
+    limit: props.limit
   });
 
   return (
     <Autocomplete
       id="filter-demo"
       options={props.options}
-      getOptionLabel={option => option.title}
+      getOptionLabel={option => option as string}
       filterOptions={filterOptions}
-      onChange={(_, option) => props.setGuessedArtwork(option)}
+      onChange={(_, option) => props.setGuessedArtwork(option as string)}
       fullWidth
       disabled={props.disabled}
       renderInput={(params) => <TextField {...params} label="Artwork name" />}

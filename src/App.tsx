@@ -10,7 +10,33 @@ import GuessStatus from './utils/interfaces/guess';
 import Art from "./utils/interfaces/art";
 import Typography from "@mui/material/Typography/Typography";
 import ShareDialog from "./components/top-level/ShareDialog";
-import ArtworksList from './tmp/artworks.json'
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+import { getFunctions, httpsCallable } from "firebase/functions";
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBnjnsVovQ3Vyt_G__wWJwb533oU3sHISs",
+  authDomain: "pixle-it.firebaseapp.com",
+  projectId: "pixle-it",
+  storageBucket: "pixle-it.appspot.com",
+  messagingSenderId: "1087921062282",
+  appId: "1:1087921062282:web:874024540c4ff5833e8873",
+  measurementId: "G-876S5H55TR"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+analytics.app.automaticDataCollectionEnabled = true
+
+const functions = getFunctions(app);
+const getTitles = httpsCallable(functions, 'getTitles');
+const getDailyWork = httpsCallable(functions, 'getDailyWork');
 
 type Props = {
   guessLimit: number
@@ -21,7 +47,7 @@ const App = (props: Props) => {
 
   const theme = useTheme()
 
-  const [artworks, setArtworks] = React.useState<Art[]>([])
+  const [titles, setTitles] = React.useState<string[]>([])
   const [selectedArtwork, setSelectedArtwork] = React.useState<Art>()
   const [gameOver, setGameOver] = React.useState(false)
   const [openArtworkDialog, setOpenArtworkDialog] = React.useState(gameOver)
@@ -31,28 +57,38 @@ const App = (props: Props) => {
   }, [gameOver])
 
   React.useEffect(() => {
-    setArtworks(ArtworksList.sort((a, b) => a.title.localeCompare(b.title)))
-  }, [])
+    const fetchTitles = async () => setTitles(((await getTitles()).data as string[]).sort((a, b) => a.localeCompare(b)))
 
-  React.useEffect(() => {
-    setSelectedArtwork(artworks[Math.floor(Math.random() * artworks.length)])
-  }, [artworks])
+    const fetchDailyWork = async (now: number) => setSelectedArtwork((await getDailyWork(now)).data as Art)
+
+    // call the function
+    fetchTitles()
+      // make sure to catch any error
+      .catch(console.error);
+
+    // call the function
+    fetchDailyWork(Date.now())
+      // make sure to catch any error
+      .catch(console.error);
+  }, [])
 
   const [pixelation, setPixelation] = React.useState(guessLimit)
   const [guesses, setGuesses] = React.useState<GuessStatus[]>([])
 
-  const [guessedArtwork, setGuessedArtwork] = React.useState<Art | null>(null)
+  const [guessedArtwork, setGuessedArtwork] = React.useState<string | null>(null)
 
   const makeGuess = React.useCallback(() => {
     if (guessedArtwork) {
-      const guess: GuessStatus = guessedArtwork === selectedArtwork ? 'correct' : 'incorrect'
+      const guess: GuessStatus = guessedArtwork === selectedArtwork?.title ? 'correct' : 'incorrect'
       if (guess === 'correct' || guesses.length + 1 >= guessLimit) {
         setPixelation(0)
         setGameOver(true)
+      } else {
+        setPixelation(pixelation - 1)
       }
       setGuesses(guesses.concat(guess))
     }
-  }, [guessedArtwork, selectedArtwork, guesses, guessLimit])
+  }, [guessedArtwork, selectedArtwork, guesses, guessLimit, pixelation])
 
   const revealImage = React.useCallback(() => {
     if (pixelation > 0) {
@@ -87,7 +123,7 @@ const App = (props: Props) => {
         {selectedArtwork && (<PixelatedImage art={selectedArtwork} pixelation={pixelation} />)}
         <Box>
           <GuessBoxes guesses={guesses} minNumBoxes={guessLimit} />
-          <GuessInput disabled={gameOver} options={artworks} setGuessedArtwork={setGuessedArtwork} />
+          <GuessInput disabled={gameOver} options={titles} setGuessedArtwork={setGuessedArtwork} />
           <Box sx={{
             display: 'flex',
             flexDirection: 'row',
@@ -99,7 +135,7 @@ const App = (props: Props) => {
                 Skip
               </Typography>
             </Button>
-            <Button onClick={makeGuess} sx={{color: theme.palette.success.main}} disabled={gameOver}>
+            <Button onClick={makeGuess} sx={{ color: theme.palette.success.main }} disabled={gameOver}>
               <Typography>
                 Guess
               </Typography>
@@ -107,7 +143,7 @@ const App = (props: Props) => {
           </Box>
         </Box>
       </Box>
-      <ShareDialog open={openArtworkDialog} art={selectedArtwork} onClose={() => setOpenArtworkDialog(false)} guesses={guesses} guessLimit={guessLimit} day={0} />
+      <ShareDialog open={openArtworkDialog} art={selectedArtwork} onClose={() => setOpenArtworkDialog(false)} guesses={guesses} guessLimit={guessLimit} day={selectedArtwork?.day ?? 0} />
     </Box>
   );
 }
