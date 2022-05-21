@@ -13,8 +13,10 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import { AppBar } from '@mui/material'
+import { ContentType } from '../../utils/interfaces/content'
 
 type Props = {
+    contentType: ContentType | undefined
     setArtworkDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -61,7 +63,7 @@ const TopBar = (props: Props) => {
                         <FavoriteBorderIcon />
                     </IconButton>
                 </ButtonGroup>
-                <Logo />
+                <Logo contentType={props.contentType} />
                 <ButtonGroup variant="text" aria-label="text button group">
                     <IconButton color="inherit" onClick={() => setArtworkDialogOpen(true)}>
                         <LeaderboardIcon />

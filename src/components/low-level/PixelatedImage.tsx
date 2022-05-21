@@ -1,20 +1,17 @@
 import React from 'react'
 import Box from '@mui/material/Box/Box'
 import useTheme from '@mui/material/styles/useTheme';
-import Art from '../../utils/interfaces/art';
-import CircularProgress from '@mui/material/CircularProgress/CircularProgress';
-import VerticalArtFrame from '../../assets/artFrame.jpg'
-import HorizontalArtFrame from '../../assets/artFrame-horizontal.jpg'
+import Content from '../../utils/interfaces/content';
 
 type Props = {
-    art: Art,
-    pixelation: number
+    art: Content,
+    pixelation: number,
+    loading: boolean,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const PixelatedImage = (props: Props) => {
     const theme = useTheme();
-
-    const [loading, setLoading] = React.useState(true)
 
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
     const imgRef = React.useRef<HTMLImageElement>(null)
@@ -53,9 +50,9 @@ const PixelatedImage = (props: Props) => {
 
     const repaintCanvas = React.useCallback(() => { resizeCanvas(); resizeImage(); redrawCanvas() }, [resizeCanvas, resizeImage, redrawCanvas])
 
-    const setupCallback = React.useCallback(() => { setLoading(false) }, [])
+    const setupCallback = React.useCallback(() => { props.setLoading(false) }, [props])
 
-    React.useEffect(repaintCanvas, [loading, repaintCanvas])
+    React.useEffect(repaintCanvas, [props.loading, repaintCanvas])
 
     React.useEffect(() => {
         imgRef.current?.addEventListener("load", setupCallback)
@@ -70,34 +67,23 @@ const PixelatedImage = (props: Props) => {
     }, [repaintCanvas])
 
     return (
-        <>
-            {loading && (<Box sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                flexGrow: 1
-            }}>
-                <CircularProgress size={theme.spacing(10)} />
-            </Box>)}
-            <Box ref={boxRef} sx={{
-                display: loading ? 'none' : 'flex',
-                flexDirection: 'column',
-                bgcolor: theme.palette.background.default,
-                color: theme.palette.text.primary,
-                borderStyle: 'solid',
-                borderImage: `url(${boxRef.current?.clientWidth as number < (boxRef.current?.clientHeight as number) ? VerticalArtFrame : HorizontalArtFrame}) 188 / ${theme.spacing(4)} / 0`,
-                p: theme.spacing(3.5),
-                m: 4,
-                boxSizing: 'content-box',
-                flexGrow: props.pixelation
-            }}>
-                <img ref={imgRef} src={props.art.url} alt={props.art.title} style={{
-                    maxWidth: '100%',
-                    maxHeight: `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(3.5)})`,
-                    display: loading ? 'none' : props.pixelation !== 0 ? 'none' : 'initial' }} />
-                <canvas ref={canvasRef} style={{ flexGrow: 1, display: loading ? 'none' : props.pixelation === 0 ? 'none' : 'initial' }} />
-            </Box>
-        </>
+        <Box ref={boxRef} sx={{
+            display: props.loading ? 'none' : 'flex',
+            flexDirection: 'column',
+            bgcolor: theme.palette.background.default,
+            color: theme.palette.text.primary,
+            borderStyle: 'solid',
+            m: 4,
+            boxSizing: 'content-box',
+            flexGrow: props.pixelation
+        }}>
+            <img ref={imgRef} src={props.art.url} alt={props.art.title} style={{
+                maxWidth: '100%',
+                maxHeight: `calc(${boxRef.current?.clientHeight}px - 2 * ${theme.spacing(3.5)})`,
+                display: props.loading ? 'none' : props.pixelation !== 0 ? 'none' : 'initial'
+            }} />
+            <canvas ref={canvasRef} style={{ flexGrow: 1, display: props.loading ? 'none' : props.pixelation === 0 ? 'none' : 'initial' }} />
+        </Box>
     )
 }
 

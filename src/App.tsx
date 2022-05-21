@@ -7,7 +7,7 @@ import PixelatedImage from "./components/low-level/PixelatedImage";
 import GuessBoxes from "./components/mid-level/GuessBoxes";
 import TopBar from "./components/mid-level/TopBar";
 import GuessStatus from './utils/interfaces/guess';
-import Art from "./utils/interfaces/art";
+import Content from "./utils/interfaces/content";
 import Typography from "@mui/material/Typography/Typography";
 import ShareDialog from "./components/top-level/ShareDialog";
 // Import the functions you need from the SDKs you need
@@ -15,6 +15,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 import { getFunctions, httpsCallable } from "firebase/functions";
+import CircularProgress from "@mui/material/CircularProgress";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -48,18 +49,20 @@ const App = (props: Props) => {
   const theme = useTheme()
 
   const [titles, setTitles] = React.useState<string[]>([])
-  const [selectedArtwork, setSelectedArtwork] = React.useState<Art>()
+  const [selectedContent, setSelectedContent] = React.useState<Content>()
   const [gameOver, setGameOver] = React.useState(false)
-  const [openArtworkDialog, setOpenArtworkDialog] = React.useState(gameOver)
+  const [openShareDialog, setOpenShareDialog] = React.useState(gameOver)
+
+  const [loading, setLoading] = React.useState(true)
 
   React.useEffect(() => {
-    if (gameOver) setOpenArtworkDialog(true)
+    if (gameOver) setOpenShareDialog(true)
   }, [gameOver])
 
   React.useEffect(() => {
     const fetchTitles = async () => setTitles(((await getTitles()).data as string[]).sort((a, b) => a.localeCompare(b)))
 
-    const fetchDailyWork = async (now: number) => setSelectedArtwork((await getDailyWork(now)).data as Art)
+    const fetchDailyWork = async (now: number) => setSelectedContent((await getDailyWork(now)).data as Content)
 
     // call the function
     fetchTitles()
@@ -79,7 +82,7 @@ const App = (props: Props) => {
 
   const makeGuess = React.useCallback(() => {
     if (guessedArtwork) {
-      const guess: GuessStatus = guessedArtwork === selectedArtwork?.title ? 'correct' : 'incorrect'
+      const guess: GuessStatus = guessedArtwork === selectedContent?.title ? 'correct' : 'incorrect'
       if (guess === 'correct' || guesses.length + 1 >= guessLimit) {
         setPixelation(0)
         setGameOver(true)
@@ -88,7 +91,7 @@ const App = (props: Props) => {
       }
       setGuesses(guesses.concat(guess))
     }
-  }, [guessedArtwork, selectedArtwork, guesses, guessLimit, pixelation])
+  }, [guessedArtwork, selectedContent, guesses, guessLimit, pixelation])
 
   const revealImage = React.useCallback(() => {
     if (pixelation > 0) {
@@ -110,7 +113,7 @@ const App = (props: Props) => {
       alignItems: 'center',
       p: `0 ${theme.spacing(2)}`,
     }}>
-      <TopBar setArtworkDialogOpen={setOpenArtworkDialog} />
+      <TopBar setArtworkDialogOpen={setOpenShareDialog} contentType={selectedContent?.type} />
       <Box sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -120,7 +123,19 @@ const App = (props: Props) => {
         flexGrow: 1,
         width: '100%'
       }}>
-        {selectedArtwork && (<PixelatedImage art={selectedArtwork} pixelation={pixelation} />)}
+        {
+          loading && (<Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            flexGrow: 1
+          }}>
+            <CircularProgress size={theme.spacing(10)} />
+          </Box>)
+        }
+        {
+          selectedContent && (<PixelatedImage art={selectedContent} pixelation={pixelation} loading={loading} setLoading={setLoading} />)
+        }
         <Box>
           <GuessBoxes guesses={guesses} minNumBoxes={guessLimit} />
           <GuessInput disabled={gameOver} options={titles} setGuessedArtwork={setGuessedArtwork} />
@@ -143,7 +158,7 @@ const App = (props: Props) => {
           </Box>
         </Box>
       </Box>
-      <ShareDialog open={openArtworkDialog} art={selectedArtwork} onClose={() => setOpenArtworkDialog(false)} guesses={guesses} guessLimit={guessLimit} day={selectedArtwork?.day ?? 0} />
+      <ShareDialog open={openShareDialog} art={selectedContent} onClose={() => setOpenShareDialog(false)} guesses={guesses} guessLimit={guessLimit} day={selectedContent?.day ?? 0} />
     </Box>
   );
 }

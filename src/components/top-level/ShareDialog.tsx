@@ -1,6 +1,6 @@
 
 import React from 'react'
-import Art from '../../utils/interfaces/art'
+import Content from '../../utils/interfaces/content'
 import GuessStatus from '../../utils/interfaces/guess'
 import Dialog from '@mui/material/Dialog/Dialog'
 import DialogTitle from '@mui/material/DialogTitle/DialogTitle'
@@ -17,7 +17,7 @@ import Alert from '@mui/material/Alert/Alert'
 
 type Props = {
     open: boolean,
-    art: Art | undefined
+    art: Content | undefined
     guesses: GuessStatus[]
     guessLimit: number
     day: number
