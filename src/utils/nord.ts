@@ -1,4 +1,4 @@
-export const nord = [
+const nord = [
     // Polar Night
     '#2e3440', // darkest grey
     '#3b4252', // darker grey
@@ -20,3 +20,5 @@ export const nord = [
     '#a3be8c', // green
     '#b48ead', // violet
 ]
+
+export default nord

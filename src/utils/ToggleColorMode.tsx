@@ -7,7 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import ThemeProvider from '@mui/material/styles/ThemeProvider'
 import { PaletteMode, ThemeOptions } from '@mui/material'
 import createPalette from '@mui/material/styles/createPalette'
-import { nord } from './nord'
+import nord from './nord'
 
 type Props = {}
 

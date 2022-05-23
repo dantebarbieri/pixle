@@ -7,7 +7,7 @@ import border_white from '../../assets/logo-border-white.png'
 import border_black from '../../assets/logo-border.png'
 import { Theme } from '@mui/system/createTheme/createTheme';
 import { ContentType } from '../../utils/interfaces/content';
-import { nord } from '../../utils/nord';
+import nord from '../../utils/nord';
 
 type Props = {
     contentType: ContentType | undefined

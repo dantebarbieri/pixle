@@ -158,7 +158,7 @@ const App = (props: Props) => {
           </Box>
         </Box>
       </Box>
-      <ShareDialog open={openShareDialog} art={selectedContent} onClose={() => setOpenShareDialog(false)} guesses={guesses} guessLimit={guessLimit} day={selectedContent?.day ?? 0} />
+      <ShareDialog open={openShareDialog} content={selectedContent} onClose={() => setOpenShareDialog(false)} guesses={guesses} guessLimit={guessLimit} day={selectedContent?.day ?? 0} gameOver={gameOver} />
     </Box>
   );
 }

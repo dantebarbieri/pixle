@@ -1,6 +1,6 @@
 
 import React from 'react'
-import Content from '../../utils/interfaces/content'
+import Content, { ContentType } from '../../utils/interfaces/content'
 import GuessStatus from '../../utils/interfaces/guess'
 import Dialog from '@mui/material/Dialog/Dialog'
 import DialogTitle from '@mui/material/DialogTitle/DialogTitle'
@@ -14,13 +14,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import useTheme from '@mui/system/useTheme'
 import Snackbar from '@mui/material/Snackbar/Snackbar'
 import Alert from '@mui/material/Alert/Alert'
+import DialogContentArt from '../low-level/DialogContentArt'
+import DialogContentMeme from '../low-level/DialogContentMeme'
+import DialogContentPlace from '../low-level/DialogContentPlace'
 
 type Props = {
-    open: boolean,
-    art: Content | undefined
+    open: boolean
+    content: Content | undefined
     guesses: GuessStatus[]
     guessLimit: number
     day: number
+    gameOver: boolean
     onClose: () => void
 }
 
@@ -76,8 +80,19 @@ const BootstrapDialogTitle = (props: DialogTitleProps) => {
     );
 };
 
+const copyShare = (guesses: GuessStatus[], guessLimit: number, day: number, contentType: ContentType, setToastOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
+    const paddedGuesses: (GuessStatus | undefined)[] = guesses.slice()
+    while (paddedGuesses.length < guessLimit) paddedGuesses.push(undefined)
+    const shareText: string =
+        `#Pixle #${day}
+
+${contentType === 'art' ? '🖼️' : contentType === 'meme' ? '🗿' : '🏛️'}${paddedGuesses.map(guess => guessToEmoji(guess)).join('')}`
+    navigator.clipboard.writeText(shareText)
+    setToastOpen(true)
+}
+
 const ShareDialog = (props: Props) => {
-    const { open, art, guesses, guessLimit, day, onClose } = props
+    const { open, content, guesses, guessLimit, day, gameOver, onClose } = props
 
     const [toastOpen, setToastOpen] = React.useState(false)
 
@@ -94,22 +109,16 @@ const ShareDialog = (props: Props) => {
 
     return (
         <BootstrapDialog open={open} onClose={handleClose}>
-            {art && (<>
-                <BootstrapDialogTitle onClose={handleClose} closeIconColor={theme.palette.text.secondary}>Your Score</BootstrapDialogTitle>
+            {content && (<>
+                <BootstrapDialogTitle onClose={handleClose} closeIconColor={theme.palette.text.secondary}>{gameOver ? `Today's ${content?.type}` : 'Your Score'} {gameOver && (<span>&ndash; <Button onClick={() => copyShare(guesses, guessLimit, day, content.type, setToastOpen)}>Share #{day}</Button></span>)}</BootstrapDialogTitle>
+                {gameOver && (<DialogContent>
+                    {content.type === 'art' ? (<DialogContentArt content={content} />) : content.type === 'meme' ? (<DialogContentMeme content={content} />) : (<DialogContentPlace content={content} />)}
+                </DialogContent>)}
                 <DialogContent dividers>
                     <GuessBoxes guesses={guesses} minNumBoxes={guessLimit} />
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={() => {
-                        const paddedGuesses: (GuessStatus | undefined)[] = guesses.slice()
-                        while (paddedGuesses.length < guessLimit) paddedGuesses.push(undefined)
-                        const shareText: string =
-                            `#Pixle #${day}
-
-🖼️${paddedGuesses.map(guess => guessToEmoji(guess)).join('')}`
-                        navigator.clipboard.writeText(shareText)
-                        setToastOpen(true)
-                    }}>
+                    <Button autoFocus onClick={() => copyShare(guesses, guessLimit, day, content.type, setToastOpen)}>
                         Share
                     </Button>
                 </DialogActions>
