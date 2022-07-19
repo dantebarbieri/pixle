@@ -24,5 +24,10 @@ export const getDailyWork = functions.https.onCall(async (data, _context) => {
   const res = await admin.firestore().collection("content")
       .where("day", "==", day)
       .get();
+  if (res.empty) {
+    await admin.firestore().collection("content")
+        .orderBy("day", "desc").limit(1)
+        .get();
+  }
   return res.docs[0]?.data();
 });
